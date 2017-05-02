@@ -106,19 +106,69 @@ describe('Page model', function () {
           done();
         }).catch(done);
       });
-      it('gets other pages with any common tags');
-      it('does not get other pages without any common tags');
+      it('gets other pages with any common tags', function(done){
+        page1.findSimilar().then(function(similarPages){
+          expect(similarPages).to.have.lengthOf(1);
+          done();
+        }).catch(done);
+      });
+      it('does not get other pages without any common tags', function(done){
+        page3.findSimilar().then(function(similarPages){
+          expect(similarPages).to.have.lengthOf(0);
+          done();
+        }).catch(done);
+      });
     });
   });
 
   describe('Validations', function () {
-    it('errors without title');
-    it('errors without content');
-    it('errors given an invalid status');
+
+    var page;
+    beforeEach(function () {
+      page = Page.build();
+    });
+
+    it('errors without title', function(done){
+      page.validate()
+      .then(function(err){
+        expect(err).to.exist;
+        expect(err.errors).to.exist;
+        expect(err.errors[0].path).to.equal('title');
+        done();
+      });
+    });
+    it('errors without content', function(done){
+      page.validate()
+      .then(function(err){
+        expect(err).to.exist;
+        expect(err.errors).to.exist;
+        expect(err.errors[2].path).to.equal('content');
+        done();
+      });
+    });
+    it('errors given an invalid status', function(done){
+        page.status = 'open';
+        expect(page.status).to.be.oneOf(['open', 'closed']);
+        done();
+    });
   });
 
   describe('Hooks', function () {
-    it('it sets urlTitle based on title before validating');
+    var page;
+    beforeEach(function (done) {
+      page = Page.build({
+        title: 'something',
+        content: 'stuff'
+      });
+      done();
+    });
+
+    it('it sets urlTitle based on title before validating', function(done){
+      page.validate().then(function(validated){
+        //console.log(validated);
+        //done();
+      })
+    });
   });
 
 });
