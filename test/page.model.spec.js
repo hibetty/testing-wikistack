@@ -5,6 +5,8 @@ var should = chai.should();
 var Page = require('../models').Page;
 
 
+chai.use(require('chai-things'));
+
 describe('Page model', function () {
   describe('Virtuals', function () {
     var page;
@@ -69,31 +71,41 @@ describe('Page model', function () {
   });
 
   describe('Instance methods', function () {
-    // var page1 = Page.create({
-    //     title: 'One',
-    //     content: 'bar',
-    //     tags: ['foo', 'bar']
-    //   });
 
-    //   var page2 = Page.create({
-    //     title: 'Two',
-    //     content: 'lalala',
-    //     tags: ['foo']
-    //   });
+    var page1, page2, page3;
+    before(function (done) {
+      Page.create({
+        title: 'one',
+        content: '1',
+        tags: ['foo', 'bar']
+      }).then(function(createdPage){
+        page1 = createdPage;
+        Page.create({
+          title: 'two',
+          content: '2',
+          tags: ['foo']
+        }).then(function(createdPage){
+          page2 = createdPage;
+          Page.create({
+          title: 'three',
+          content: '3',
+          tags: ['hello']
+        }).then(function(createdPage){
+          page3 = createdPage;
+          done();
+        }).catch(done);
+        });
+      });
+    });
 
-    //   var page3 = Page.create({
-    //     title: 'Three',
-    //     content: 'hi',
-    //     tags: ['hello', 'world']
-    //   });
-
-
-    //   before(function(){
-    //     return Promise.all([page1, page2, page3]);
-    //   });
 
     describe('findSimilar', function () {
-      it('never gets itself');
+      it('never gets itself', function(done){
+        page1.findSimilar().then(function(similarPages){
+          expect(similarPages).to.have.lengthOf(1);
+          done();
+        }).catch(done);
+      });
       it('gets other pages with any common tags');
       it('does not get other pages without any common tags');
     });
